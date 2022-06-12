@@ -1,3 +1,4 @@
+#from typing_extensions import Required
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
@@ -9,6 +10,7 @@ class Cluster(models.Model):
                 validators=[MaxValueValidator(1),MinValueValidator(0)])
     duration= models.PositiveIntegerField()
     availability = models.DateField()
+    #datum überprüfen
 
 class freeDates(models.Model):
     date = models.DateField()   

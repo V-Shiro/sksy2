@@ -91,9 +91,9 @@ def new(request):
     else:          
         return render(request, 'firstapp/NewCL.html', context)
 
-def delete(request, todo_id):
-     todo = Cluster.objects.get(pk=todo_id)
-     todo.delete()
+def deleteCluster(request, cluster_id):
+     cluster = Cluster.objects.get(pk=cluster_id)
+     cluster.delete()
      return redirect('Übersicht')
 
 def impressum(request):

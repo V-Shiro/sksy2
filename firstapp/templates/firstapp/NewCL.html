@@ -21,6 +21,9 @@
     <nav>
       <a href="{% url 'Übersicht' %}">Übersicht</a>
     </nav>
+    {% for message in messages %}
+        <p>{{message}}</p>
+      {% endfor %}
     
     <div class="row">
       <div class="w-25 mx-md-auto">
