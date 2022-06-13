@@ -31,7 +31,7 @@
     <nav>
         <a href="{% url 'homestudi' %}">Übersicht</a>
         <a href="{% url 'homestudi' %}">Mein Profil</a>
-        <a href="{% url 'homestudi' %}">Reservierte Termine</a>
+        <a href="{% url 'ResPage' %}">Reservierte Termine</a>
         <a href="{% url 'Login' %}">Login</a>
     </nav>
 
@@ -56,7 +56,7 @@
                 <td class="col-sm-1">{{cl.duration}}</td>
                 <td class="col-sm-1">{{cl.availability}}</td>
                 <td class="col-sm-3">
-                    <a class="btn btn-light" href="" role="button">free dates</a>
+                    <a class="btn btn-light" href="{% url 'book' cl.id%}" role="button">reserve</a>
                 </td>
               </tr>
             {% endfor %}

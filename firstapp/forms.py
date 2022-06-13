@@ -1,7 +1,7 @@
 from dataclasses import fields
 from django import forms
 from django.forms import ModelForm
-from .models import Cluster, Todo, Nutzer
+from .models import Cluster, Todo, Nutzer, Reservation
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -15,7 +15,7 @@ class TodoForm(ModelForm):
 class ClusterForm(ModelForm):
     class Meta:
         model = Cluster
-        fields = ('title', 'quantity', 'duration', 'availability')
+        fields = ('title', 'quantity', 'availability')
 
 class RegisterForm(UserCreationForm):
 #	matrikelnummer = forms.IntegerField(max_value="1000000")
@@ -30,3 +30,8 @@ class RegisterForm(UserCreationForm):
 		if commit:
 			user.save()
 		return user
+
+class ReservationForm(ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ('clus_name', 'duration')

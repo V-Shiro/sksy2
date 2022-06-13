@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="de">
@@ -16,64 +15,62 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" 
           crossorigin="anonymous">
 </head>
+
 <body>
     <header>
-        <h1><b>Admin Übersicht</b></h1>
+        <h1>
+          <b style="color:aliceblue"> SimpleSlot </b>
+          <nav class="navbar">
+            <span style="background-color: rgba(0, 194, 194)">logged in as: {{request.user}}</span>
+            <a style="background-color: rgba(0, 194, 194)" href="{% url 'Logout' %}" class="btn btn-info btn-lg">Logout</a>
+          </nav>
+        </h1>
+
     </header>
 
     <nav>
-        <a href="{% url 'Übersicht' %}">Übersicht</a>
-        <a href="{% url 'New' %}">Neue Ressource</a>
-        <a href="{% url 'Übersicht' %}">Mein Profil</a>
+        <a href="{% url 'homestudi' %}">Übersicht</a>
+        <a href="{% url 'homestudi' %}">Mein Profil</a>
+        <a href="{% url 'ResPage' %}">Reservierte Termine</a>
         <a href="{% url 'Login' %}">Login</a>
-        
     </nav>
 
-
-    <h3>Cluster Liste </h3>
-    
-    <nav class="navbar">
-      <span>Logged in: {{request.user}}</span>
-      <a href="{% url 'Logout' %}" class="btn btn-info btn-lg">Logout</a>
-    </nav>
-    
+    <h3>Reservations </h3>
     <div class="container-fluid">
       <div class="table-responsive">
         <table id="mainTable" class="table table-striped table-hover">
           <thead>
             <tr>
-              <th>Titel</th>
-              <th>Quantity</th>
-              <th>Duration in days</th>
-              <th>Availability</th>
-              <th>Aktionen</th>
+                <th>Titel</th>
+                <th>reserved for:</th>
+                <th>Quantity</th>
+                <th>Duration in days</th>
+
+                <th>Aktionen</th>
             </tr>
           </thead>
           <tbody>
-            {% for cl in cluster %}
+            {% for cl in schedules %}
               <tr>
-                <td class="col-lg-6">{{cl.title}}</td>
+                <td class="col-lg-6">{{cl.clus_name|truncatechars:160}}</td>
+                <td class="col-sm-2">{{request.user}}</td>
                 <td class="col-sm-2">{{cl.quantity}}</td>
                 <td class="col-sm-1">{{cl.duration}}</td>
-                <td class="col-sm-1">
-                  <a class="btn btn-outline-secondary" href="{% url 'ResPage' %}" role="button">free dates</a>
-                  <a class="btn btn-outline-secondary" href="" role="button">taken dates</a>
-                </td>
+
                 <td class="col-sm-3">
-                  <a class="btn btn-primary" href="{% url 'edit' cl.id %}" role="button">&#x270E</a>
-                  <a class="btn close" href="{% url 'delete' cl.id %}" role="button">&#9747</a>
+                    <a class="btn btn-light" href="{% url 'homestudi' %}" role="button">change</a>
                 </td>
-              </tr> 
+              </tr>
             {% endfor %}
           </tbody>
         </table>  
       </div>
     </div>
     <footer class="footer">
-      <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-        <a href="{% url 'Impressum' %}">Impressum</a>
-      </div>
-      </footer>
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+          <a href="{% url 'Impressum' %}">Impressum</a>
+        </div>
+    </footer>
 </body>
 
 <!-- Javascript -->
@@ -85,29 +82,29 @@
 <style>
 h1 {
   padding: 20px;
-  text-align: center;
+  text-align: left;
+  text-decoration-color: aqua;
   font-size: 40px;
-  background-color: rgb(207, 87, 87);
+  background-color: rgb(0, 194, 194)
 }
 nav {
   padding: 5px;
-  text-align: center;
+  text-align: left;
   font-size: 20px;
   width: 100%;
-  background-color: lightgrey;
+  background-color: rgb(255, 255, 255);
   color: black;
 }
 a {
-  color:darkslategrey;
+  color:rgb(0, 0, 0);
   padding-left: 15px;
   padding-right: 15px;
   text-decoration: none;
 }
 h3 {
-  margin: 25px 20%;
   padding: 10px;
   background-color: lightgreen;
-  text-align: center;
+  text-align: left;
 }
 .close {
   padding: 7px 17px;
@@ -116,8 +113,6 @@ h3 {
 .close:hover {
   background-color: #f44336;
 }
-
-	
 html {
 	position: relative; /* relative positioning to help positioning the footer */
 	min-height: 100%; /* set min-height to help positioning the footer */
