@@ -17,7 +17,7 @@ class Cluster(models.Model):
 class freeDates(models.Model):
     date = models.DateField()   
 
-# not used yet, using the defaul "User" model from django
+# not used yet, using the default "User" model from django
 class Nutzer(models.Model):
     matrikelnummer = models.IntegerField(primary_key=True)
     username = models.CharField(max_length=50)
