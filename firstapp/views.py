@@ -25,6 +25,7 @@ import json
 from django.forms.models import model_to_dict
 from .forms import *
 from datetime import datetime
+from todo_server.tasks import send_msg
 
 
 def profile(request, user_id):
@@ -55,6 +56,7 @@ def profile_update(request, user_id):
 
 
 def loggingin(request):
+    send_msg.delay()
     if request.method == "POST":
 
         username = request.POST.get('username')
