@@ -20,7 +20,7 @@ def notify(self):
     set_of_users_with_reservations = Users_reservations_dict.objects.all()
 
     for dt in set_of_users_with_reservations:
-        if ((datetime.strptime(dt.reservation.date, '%Y-%m-%d').date()) == (datetime.today().date() + timedelta(days = 2))):
+        if ((datetime.strptime(dt.reservation.date, '%Y-%m-%d').date()) == (datetime.today().date() + timedelta(days = 1))):
             first_name = dt.user
             last_name = ' '
             email = dt.user.email
