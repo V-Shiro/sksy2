@@ -25,7 +25,9 @@ import json
 from django.forms.models import model_to_dict
 from .forms import *
 from datetime import datetime
-from todo_server.tasks import send_msg
+from todo_server.tasks import send_msg, notify
+
+from django.core.mail import send_mail
 
 
 def profile(request, user_id):
@@ -57,6 +59,7 @@ def profile_update(request, user_id):
 
 def loggingin(request):
     send_msg.delay()
+    notify.delay()
     if request.method == "POST":
 
         username = request.POST.get('username')
@@ -207,7 +210,7 @@ def deleteResAdmin(request, reservation_id):
         res.reservation.save()
 
     res.delete()
-    q_set_all_users = User.objects.all().exclude(username = 'admin')
+    q_set_all_users = User.objects.all().exclude(username = 'Admin')
     reserved_objs = Users_reservations_dict.objects.all()
     contextt = {'res_dicts': reserved_objs,
                 'users_list': q_set_all_users
@@ -231,9 +234,34 @@ def deleteSlot(request, reservation_id, slot_value):
                         }
             return render(request, 'firstapp/ReservierteTermine.html', contextt)
 
-
 def impressum(request):
-    return render(request, 'firstapp/Impressum.html')
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        need = request.POST.get('need')
+        message = request.POST.get('message')
+
+        data = {
+            'name': f'{first_name} {last_name}',
+            'email': email,
+            'need': need,
+            'message': message,
+        }
+
+        message = '''
+        Neue Nachricht: {}
+        von: {}
+        Thema: {}
+
+        {}
+
+        '''.format(data['name'], data['email'], data['need'], data['message'])
+
+        send_mail(need, message, '', ['simpleslot101@gmail.com'],fail_silently=False)
+        return render(request, 'firstapp/Impressum.html', {'first_name' : first_name})
+    else:
+         return render(request, 'firstapp/Impressum.html')
 
 
 def remove_dups(list):
@@ -252,26 +280,26 @@ def sort_time_lists(listt):  # '08:00 -09:00'
     return sorted(sort_list)
 
 
-def update_reservations(request):
-    all_dicts_list = Users_reservations_dict.objects.all()
-    current_day = datetime.today().date()
-    current_time = datetime.now().time()
+# def update_reservations(request):
+#     all_dicts_list = Users_reservations_dict.objects.all()
+#     current_day = datetime.today().date()
+#     current_time = datetime.now().time()
 
-    for dict in all_dicts_list:
-        if dict.not_av_slots != 0:
-            for sl in dict.not_av_slots:
-                res_date = datetime.strptime(
-                    dict.reservation.date, '%Y-%m-%d').date()
-                slot_value = datetime.strptime(sl[-5:], '%H:%M').time()
-                if (current_day >= res_date) and (current_time > slot_value):
-                    dict.not_av_slots.remove(sl)
-                    dict.save()
-                    # if doesn't work properly, try filtering through Reservations.objects() then get concerned reservation and apply changes accordingly
-                    dict.reservation.av_slots.append(sl)
-                    dict.reservation.save()
-                elif (current_day > res_date):
-                    res_id = dict.reservation.id
-                    Reservation.objects.get(pk=res_id).delete()
+#     for dict in all_dicts_list:
+#         if dict.not_av_slots != 0:
+#             for sl in dict.not_av_slots:
+#                 res_date = datetime.strptime(
+#                     dict.reservation.date, '%Y-%m-%d').date()
+#                 slot_value = datetime.strptime(sl[-5:], '%H:%M').time()
+#                 if (current_day >= res_date) and (current_time > slot_value):
+#                     dict.not_av_slots.remove(sl)
+#                     dict.save()
+#                     # if doesn't work properly, try filtering through Reservations.objects() then get concerned reservation and apply changes accordingly
+#                     dict.reservation.av_slots.append(sl)
+#                     dict.reservation.save()
+#                 elif (current_day > res_date):
+#                     res_id = dict.reservation.id
+#                     Reservation.objects.get(pk=res_id).delete()
 
 
 def update_slots(request, slot_value, res_id, user_id):
@@ -294,6 +322,8 @@ def update_slots(request, slot_value, res_id, user_id):
     contextt = {'res_objs': reservation_objs,
                 'available_slots': sorted(choosen_Reservation.av_slots),
                 'res_id': res_id,
+                'picked_date': choosen_Reservation.date,
+                'cluster': choosen_Reservation.clusterr,
 
                 }
     return render(request, 'firstapp/slot_booking.html', contextt)
@@ -328,7 +358,10 @@ def whole_day(request, res_id, user_id):
                     'available_slots': sorted(choosen_Reservation.av_slots),
                     'booked_slots': choosen_Reservation.not_av_slots,
                     'res_id': res_id,
+                    'picked_date': choosen_Reservation.date,
+                    'cluster': choosen_Reservation.clusterr,
                     }
+        messages.success(request, "Successfully registered the whole day.")
         return render(request, 'firstapp/slot_booking.html', contextt)
 
 
@@ -413,12 +446,11 @@ def ResPage(request, user_id):
     contextt = {'res_dicts': reserved_objs,
                 }
     return render(request, 'firstapp/ReservierteTermine.html', contextt)
-    # while True:
-    #     #update_reservations(request)
+
 
 
 def AdminResControl(request):
-    q_set_all_users = User.objects.all().exclude(username = 'admin')
+    q_set_all_users = User.objects.all().exclude(username = 'Admin')
     reserved_objs = Users_reservations_dict.objects.all()
     contextt = {'res_dicts': reserved_objs,
                 'users_list': q_set_all_users
