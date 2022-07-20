@@ -7,6 +7,7 @@ from pytz import timezone
 
 from celery import Celery
 from celery.schedules import crontab
+from datetime import timedelta
 
 from django.conf import settings
 #from django_celery_beat.models import PeriodicTask
@@ -25,9 +26,8 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.beat_schedule = {
     'send_reminder_everyday_at_22': {
         'task': 'todo_server.tasks.notify',
-        'schedule': crontab(hour=16, minute=0)
-        # 'schedule': crontab(minute='*/1')
-
+        'schedule': crontab(hour=20, minute=33)
+        #"schedule": timedelta(seconds=30),
     }, 
 
     'updates_reservations_every1min': {
